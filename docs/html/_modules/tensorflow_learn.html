@@ -121,10 +121,10 @@
 
 <div class="viewcode-block" id="tensorflow_learn.run"><a class="viewcode-back" href="../tensorflow_learn.html#tensorflow_learn.tensorflow_learn.run">[docs]</a>	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="n">config</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">ConfigProto</span><span class="p">(</span><span class="n">intra_op_parallelism_threads</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> \
-					<span class="n">inter_op_parallelism_threads</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>\
-					<span class="n">log_device_placement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-		<span class="c1"># config.gpu_options.allow_growth = False</span>
-		<span class="c1">#			 session = tf.Session(config=config) </span>
+                    <span class="n">inter_op_parallelism_threads</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>\
+                    <span class="n">log_device_placement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># config.gpu_options.allow_growth = False</span>
+        <span class="c1">#             session = tf.Session(config=config) </span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start to run ...&#39;</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">setup_train_test_split</span><span class="p">()</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">setup_classifiers</span><span class="p">()</span>

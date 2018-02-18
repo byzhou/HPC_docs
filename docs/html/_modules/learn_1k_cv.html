@@ -45,6 +45,9 @@
 
 <div class="viewcode-block" id="learn_1k_cv"><a class="viewcode-back" href="../learn_1k_cv.html#learn_1k_cv.learn_1k_cv">[docs]</a><span class="k">class</span> <span class="nc">learn_1k_cv</span><span class="p">(</span><span class="n">learn_all_boyou</span><span class="o">.</span><span class="n">boyou_learn</span><span class="p">):</span>
 <div class="viewcode-block" id="learn_1k_cv.classic_cross_validation"><a class="viewcode-back" href="../learn_1k_cv.html#learn_1k_cv.learn_1k_cv.classic_cross_validation">[docs]</a>    <span class="k">def</span> <span class="nf">classic_cross_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param dict report: simulation report dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start to cross validate ...&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_classifiers</span><span class="p">()</span>
