@@ -1,0 +1,246 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cross_validation_1k &#8212; Malware Detection Using HPC Data Analysis  documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Malware Detection Using HPC Data Analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cross_validation_1k</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">learn_all_boyou</span> <span class="k">import</span> <span class="n">boyou_learn</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">precision_recall_fscore_support</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">classification_report</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">auc</span>
+<span class="kn">import</span> <span class="nn">cross_validation</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">StratifiedKFold</span>
+
+<div class="viewcode-block" id="boyou_cus_x_validation"><a class="viewcode-back" href="../cross_validation_1k.html#cross_validation_1k.boyou_cus_x_validation">[docs]</a><span class="k">class</span> <span class="nc">boyou_cus_x_validation</span><span class="p">(</span><span class="n">cross_validation</span><span class="o">.</span><span class="n">boyou_cross_validation</span><span class="p">):</span>
+<div class="viewcode-block" id="boyou_cus_x_validation.train_test_selection"><a class="viewcode-back" href="../cross_validation_1k.html#cross_validation_1k.boyou_cus_x_validation.train_test_selection">[docs]</a>    <span class="k">def</span> <span class="nf">train_test_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">benign_train_list</span><span class="p">,</span> <span class="n">malware_train_list</span><span class="p">,</span>\
+            <span class="n">benign_test_list</span><span class="p">,</span> <span class="n">malware_test_list</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;number of benignwares &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">benign_list</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;number of malwares &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">malware_list</span><span class="p">)))</span>
+        <span class="c1"># first make sure the cross selection between various bms</span>
+        <span class="c1"># benign_train_list   = random.sample(self.benign_list, int(0.9 * len(self.benign_list)))</span>
+        <span class="c1"># malware_train_list  = random.sample(self.malware_list, int(0.9 * len(self.malware_list)))</span>
+        <span class="c1"># benign_test_list    = [elem for elem in self.benign_list if elem not in benign_train_list]</span>
+        <span class="c1"># malware_test_list   = [elem for elem in self.malware_list if elem not in malware_train_list]</span>
+        <span class="n">experiment_info</span>                         <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">experiment_info</span><span class="p">[</span><span class="s1">&#39;benign_train_list&#39;</span><span class="p">]</span>    <span class="o">=</span> <span class="n">benign_train_list</span>
+        <span class="n">experiment_info</span><span class="p">[</span><span class="s1">&#39;malware_train_list&#39;</span><span class="p">]</span>   <span class="o">=</span> <span class="n">malware_train_list</span>
+        <span class="n">experiment_info</span><span class="p">[</span><span class="s1">&#39;benign_test_list&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="n">benign_test_list</span>
+        <span class="n">experiment_info</span><span class="p">[</span><span class="s1">&#39;malware_test_list&#39;</span><span class="p">]</span>    <span class="o">=</span> <span class="n">malware_test_list</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_path</span> <span class="o">+</span> <span class="s2">&quot;experiment_info.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">experiment_info</span><span class="p">),</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;benign_train_list&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">benign_train_list</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;benign_test_list&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">benign_test_list</span><span class="p">))</span>
+       
+        <span class="k">def</span> <span class="nf">read_and_vstack</span><span class="p">(</span><span class="n">file_list</span><span class="p">,</span> <span class="n">train_list</span><span class="p">):</span>
+            <span class="n">store_train_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">store_test_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path_prefix</span> <span class="o">+</span> <span class="n">files</span> <span class="o">+</span> <span class="s2">&quot; ... &quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path_prefix</span> <span class="o">+</span> <span class="n">files</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">data_file</span><span class="p">:</span>
+                    <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">json_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">train_list</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">each_sample</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="n">bm</span><span class="p">]:</span>
+                            <span class="k">if</span> <span class="n">store_train_data</span> <span class="o">==</span> <span class="p">[]:</span>
+                                <span class="n">store_train_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">each_sample</span><span class="p">)</span> 
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">store_train_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">store_train_data</span><span class="p">,</span> <span class="n">each_sample</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">each_sample</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="n">bm</span><span class="p">]:</span>
+                            <span class="k">if</span> <span class="n">store_test_data</span> <span class="o">==</span> <span class="p">[]:</span>
+                                <span class="n">store_test_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">each_sample</span><span class="p">)</span> 
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">store_test_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">store_test_data</span><span class="p">,</span> <span class="n">each_sample</span><span class="p">))</span>
+                <span class="n">data_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> 
+            <span class="k">return</span> <span class="n">store_train_data</span><span class="p">,</span> <span class="n">store_test_data</span>
+
+        <span class="n">benign_train_data</span><span class="p">,</span> <span class="n">benign_test_data</span>     <span class="o">=</span> <span class="n">read_and_vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">benign_files</span><span class="p">,</span> <span class="n">benign_train_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;benign_train_data.shape&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">benign_train_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;benign_test_data.shape&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">benign_test_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">malware_train_data</span><span class="p">,</span> <span class="n">malware_test_data</span>   <span class="o">=</span> <span class="n">read_and_vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">malware_files</span><span class="p">,</span> <span class="n">malware_train_list</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;malware_train_data.shape&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">malware_train_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;malware_test_data.shape&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">malware_test_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="c1"># match bias within data set</span>
+        <span class="n">half_train_size</span>     <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">benign_train_data</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">malware_train_data</span><span class="p">))</span>
+        <span class="n">half_test_size</span>      <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">benign_test_data</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">malware_test_data</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">half_train_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">half_test_size</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span>\
+                                <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">benign_train_data</span><span class="p">,</span> <span class="n">half_train_size</span><span class="p">),</span>\
+                                <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">malware_train_data</span><span class="p">,</span> <span class="n">half_train_size</span><span class="p">)</span>\
+                                <span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span>\
+                                <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">benign_test_data</span><span class="p">,</span> <span class="n">half_test_size</span><span class="p">),</span>\
+                                <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">malware_test_data</span><span class="p">,</span> <span class="n">half_test_size</span><span class="p">)</span>\
+                                <span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_train</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">half_train_size</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">half_train_size</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">half_test_size</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">half_test_size</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;train Size &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_train</span><span class="p">)))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;test Size &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">)))</span>
+
+<div class="viewcode-block" id="boyou_cus_x_validation.experiment_1"><a class="viewcode-back" href="../cross_validation_1k.html#cross_validation_1k.boyou_cus_x_validation.experiment_1">[docs]</a>    <span class="k">def</span> <span class="nf">experiment_1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># if os.path.isdir(self.result_path):</span>
+        <span class="c1">#     shutil.rmtree(self.result_path)</span>
+        <span class="c1"># os.mkdir(self.result_path) </span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_classifiers</span><span class="p">()</span>
+        <span class="c1"># match two list</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">benign_list</span><span class="p">)</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">malware_list</span><span class="p">)</span>
+        <span class="n">list_len</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">benign_list</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">malware_list</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">benign_list</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">benign_list</span><span class="p">,</span> <span class="n">list_len</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">malware_list</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">malware_list</span><span class="p">,</span> <span class="n">list_len</span><span class="p">))</span>
+
+        <span class="n">cv</span>                      <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">count</span>                   <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">experiment_path</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_path</span>
+        <span class="k">for</span> <span class="n">train_idx</span><span class="p">,</span> <span class="n">test_idx</span> <span class="ow">in</span> <span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">benign_list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">benign_list</span><span class="p">))):</span>
+            <span class="n">benign_train_list</span><span class="p">,</span> <span class="n">benign_test_list</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">benign_list</span><span class="p">[</span><span class="n">train_idx</span><span class="p">],</span>\
+                <span class="bp">self</span><span class="o">.</span><span class="n">benign_list</span><span class="p">[</span><span class="n">test_idx</span><span class="p">]</span>
+            <span class="n">malware_train_list</span><span class="p">,</span> <span class="n">malware_test_list</span> <span class="o">=</span>\
+                <span class="bp">self</span><span class="o">.</span><span class="n">malware_list</span><span class="p">[</span><span class="n">train_idx</span><span class="p">],</span>\
+                <span class="bp">self</span><span class="o">.</span><span class="n">malware_list</span><span class="p">[</span><span class="n">test_idx</span><span class="p">]</span>
+           
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_path</span>    <span class="o">=</span> <span class="n">experiment_path</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_path</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_path</span> <span class="o">+</span> <span class="s2">&quot; new folder created ....&quot;</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_path</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">report</span>     <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_path</span> <span class="o">+</span> <span class="s2">&quot; old directory exists ....&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_path</span> <span class="o">+</span> <span class="s1">&#39;cv_classification_report.txt&#39;</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_path</span> <span class="o">+</span> <span class="s2">&quot; old report exists ....&quot;</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_path</span> <span class="o">+</span> <span class="s1">&#39;cv_classification_report.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+                    <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">report</span>     <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="n">count</span>               <span class="o">+=</span> <span class="mi">1</span>
+
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_test_selection</span><span class="p">(</span><span class="n">benign_train_list</span><span class="p">,</span> <span class="n">malware_train_list</span><span class="p">,</span>\
+                        <span class="n">benign_test_list</span><span class="p">,</span> <span class="n">malware_test_list</span><span class="p">)</span>
+
+           
+            <span class="k">for</span> <span class="n">names</span><span class="p">,</span> <span class="n">clf</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">names</span> <span class="o">+</span> <span class="s2">&quot; in process ....&quot;</span><span class="p">)</span>
+                <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_train</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">prediction</span>  <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">predict_proba</span>  <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text_class_report</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">roc_curve_report</span><span class="p">(</span><span class="n">names</span><span class="p">)</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">names</span> <span class="o">+</span> <span class="s2">&quot; testing completed!&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">global</span> <span class="n">logger</span>    
+    <span class="n">logger</span>  <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="n">logger_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+    <span class="n">logger_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span>\
+        <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>\
+        <span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> [</span><span class="si">%(levelname)s</span><span class="s1">] </span><span class="si">%(filename)s</span><span class="s1"> [</span><span class="si">%(lineno)d</span><span class="s1">]: </span><span class="si">%(funcName)s</span><span class="s1">(): </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logger_handler</span><span class="p">)</span>
+
+    <span class="n">learn1</span> <span class="o">=</span> <span class="n">boyou_cus_x_validation</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span>\
+        <span class="n">data_path_prefix</span><span class="o">=</span><span class="s1">&#39;../amd_data/&#39;</span><span class="p">)</span>
+
+    <span class="n">learn1</span><span class="o">.</span><span class="n">result_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span>
+    <span class="n">learn1</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Result is in folder &#39;</span> <span class="o">+</span> <span class="n">learn1</span><span class="o">.</span><span class="n">result_path</span><span class="p">)</span>
+    <span class="n">learn1</span><span class="o">.</span><span class="n">experiment_1</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Malware Detection Using HPC Data Analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Boyou Zhou.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.
+    </div>
+  </body>
+</html>

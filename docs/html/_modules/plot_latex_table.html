@@ -1,0 +1,189 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plot_latex_table &#8212; Malware Detection Using HPC Data Analysis  documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Malware Detection Using HPC Data Analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for plot_latex_table</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">pyperclip</span>
+
+<div class="viewcode-block" id="write_to_files"><a class="viewcode-back" href="../plot_latex_table.html#plot_latex_table.write_to_files">[docs]</a><span class="k">def</span> <span class="nf">write_to_files</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">numbers_path</span> <span class="o">=</span> <span class="s1">&#39;numbers/&#39;</span>
+    <span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">columns</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;f1_score&#39;</span><span class="p">,</span> <span class="s1">&#39;roc_auc&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">columns</span> <span class="o">==</span> <span class="s1">&#39;roc_auc&#39;</span> <span class="ow">and</span> <span class="s1">&#39;roc_auc&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="n">clf</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">columns</span> <span class="o">==</span> <span class="s1">&#39;roc_auc&#39;</span><span class="p">:</span>
+                <span class="n">auc_string</span> <span class="o">=</span> <span class="s1">&#39;auc&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">auc_string</span> <span class="o">=</span> <span class="n">columns</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">numbers_path</span> <span class="o">+</span> <span class="s2">&quot;__&quot;</span> \
+                            <span class="o">+</span> <span class="n">clf</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>\
+                            <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">auc_string</span> <span class="o">+</span> <span class="s2">&quot;__.tex&quot;</span>
+            <span class="nb">print</span> <span class="n">filename</span>
+            <span class="n">writefile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">writefile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0:.4g}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">columns</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+</div>
+            <span class="n">writefile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="find_data"><a class="viewcode-back" href="../plot_latex_table.html#plot_latex_table.find_data">[docs]</a><span class="k">def</span> <span class="nf">find_data</span><span class="p">(</span><span class="n">read_path</span><span class="p">,</span> <span class="n">json_write_path</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">read_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">data_file</span><span class="p">:</span>
+        <span class="n">total_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
+    <span class="n">data_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span> <span class="s2">&quot;Loading complete ...&quot;</span> 
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">models</span> <span class="ow">in</span> <span class="n">total_data</span><span class="p">:</span>
+        <span class="n">highest_f1_score</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">models</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">models</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">experiments</span> <span class="ow">in</span> <span class="n">total_data</span><span class="p">[</span><span class="n">models</span><span class="p">]:</span>
+            <span class="nb">print</span> <span class="s2">&quot;Reading model &quot;</span> <span class="o">+</span> <span class="n">models</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">experiments</span> <span class="o">+</span> <span class="s2">&quot; ...&quot;</span>
+            <span class="k">if</span> <span class="n">total_data</span><span class="p">[</span><span class="n">models</span><span class="p">][</span><span class="n">experiments</span><span class="p">][</span><span class="s1">&#39;f1_score&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">highest_f1_score</span><span class="p">:</span>
+                <span class="n">highest_f1_score</span> <span class="o">=</span> <span class="n">total_data</span><span class="p">[</span><span class="n">models</span><span class="p">][</span><span class="n">experiments</span><span class="p">][</span><span class="s1">&#39;f1_score&#39;</span><span class="p">]</span> 
+                <span class="n">data</span><span class="p">[</span><span class="n">models</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_data</span><span class="p">[</span><span class="n">models</span><span class="p">][</span><span class="n">experiments</span><span class="p">]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_write_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">data_file</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">data_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">data</span>
+
+<div class="viewcode-block" id="read_data"><a class="viewcode-back" href="../plot_latex_table.html#plot_latex_table.read_data">[docs]</a><span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="n">readfile</span><span class="p">):</span>
+    <span class="c1">#with open(&#39;plot_latex_table.json&#39;, &#39;r&#39;) as data_file:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">data_file</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
+    <span class="n">data_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">data</span>
+
+<div class="viewcode-block" id="generate_latex_table"><a class="viewcode-back" href="../plot_latex_table.html#plot_latex_table.generate_latex_table">[docs]</a><span class="k">def</span> <span class="nf">generate_latex_table</span><span class="p">(</span><span class="n">readfile</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="n">readfile</span><span class="p">)</span>
+    <span class="n">report_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    </span>
+<span class="s2">    </span><span class="se">\\</span><span class="s2">begin</span><span class="si">{table}</span><span class="s2">[]</span>
+<span class="s2">    </span><span class="se">\\</span><span class="s2">centering   </span>
+<span class="s2">    </span><span class="se">\\</span><span class="s2">caption{Accuracies in Malware Detection (Malware as Positive Label)}</span>
+<span class="s2">    </span><span class="se">\\</span><span class="s2">label{tab:accuracy}     </span>
+<span class="s2">    </span><span class="se">\\</span><span class="s2">resizebox{</span><span class="se">\\</span><span class="s2">columnwidth}{!}{%</span>
+<span class="s2">    </span><span class="se">\\</span><span class="s2">begin</span><span class="si">{tabular}</span><span class="s2">{c|cccc}  </span>
+<span class="s2">    Algo. &amp; Precision[$</span><span class="se">\\</span><span class="s2">%$] &amp; Recall[$</span><span class="se">\\</span><span class="s2">%$] &amp; F1-Score[$</span><span class="se">\\</span><span class="s2">%$] &amp; AUC[$</span><span class="se">\\</span><span class="s2">%$]</span><span class="se">\\\\</span><span class="s2"></span>
+<span class="s2">    </span><span class="se">\\</span><span class="s2">hline</span>
+<span class="s2">    </span><span class="se">\\</span><span class="s2">hline</span>
+
+
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">report_string</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span><span class="o">*</span><span class="mi">8</span> <span class="o">+</span> <span class="n">clf</span> 
+        <span class="k">for</span> <span class="n">columns</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="s1">&#39;recall&#39;</span><span class="p">,</span> <span class="s1">&#39;f1_score&#39;</span><span class="p">,</span> <span class="s1">&#39;roc_auc&#39;</span><span class="p">]:</span>
+            <span class="n">report_string</span> <span class="o">+=</span> <span class="s2">&quot; &amp; &quot;</span>
+            <span class="k">if</span> <span class="n">columns</span> <span class="o">==</span> <span class="s1">&#39;roc_auc&#39;</span> <span class="ow">and</span> <span class="s1">&#39;roc_auc&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="n">clf</span><span class="p">]:</span>
+                <span class="n">report_string</span> <span class="o">+=</span> <span class="s2">&quot;{</span><span class="se">\\</span><span class="s2">color</span><span class="si">{red}</span><span class="s2">$TBD$}&quot;</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">clf</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;(tensorflow)&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">columns</span> <span class="o">!=</span> <span class="s1">&#39;roc_auc&#39;</span><span class="p">:</span>
+                <span class="n">percentage_num</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">columns</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">percentage_num</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">columns</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+                <span class="n">percentage_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0:.4g}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">percentage_num</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">percentage_num</span> <span class="o">&gt;</span> <span class="mi">90</span><span class="p">:</span>
+                <span class="n">report_string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">textbf{&quot;</span> <span class="o">+</span> <span class="n">percentage_str</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+            <span class="k">elif</span> <span class="n">percentage_num</span> <span class="o">&lt;</span> <span class="mi">40</span><span class="p">:</span>
+                <span class="n">report_string</span> <span class="o">+=</span> <span class="s2">&quot;{\color</span><span class="si">{red}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">percentage_str</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">report_string</span> <span class="o">+=</span> <span class="n">percentage_str</span> 
+        <span class="n">report_string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\\\\\n</span><span class="s2">&quot;</span>
+    <span class="n">report_string</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">    \end</span><span class="si">{tabular}</span><span class="s2"></span>
+<span class="s2">    }</span>
+<span class="s2">    \end</span><span class="si">{table}</span><span class="s2"></span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span> <span class="s2">&quot;*&quot;</span><span class="o">*</span><span class="mi">50</span>
+    <span class="nb">print</span> <span class="n">report_string</span>
+    <span class="nb">print</span> <span class="s2">&quot;*&quot;</span><span class="o">*</span><span class="mi">50</span>
+    <span class="n">writefile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">writefile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">report_string</span><span class="p">)</span>
+    <span class="n">writefile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">report_string</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">data</span>
+
+    <span class="c1"># generate all the numbers files</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">find_data</span><span class="p">(</span><span class="s1">&#39;1k_custom_cv/total_data.txt&#39;</span><span class="p">,</span>\
+                <span class="s1">&#39;plot_latex_table.json&#39;</span><span class="p">)</span>
+    <span class="c1"># find_data(&#39;customized_cross_validation/total_data.txt&#39;,\</span>
+    <span class="c1">#             &#39;plot_latex_table.json&#39;)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">generate_latex_table</span><span class="p">(</span><span class="s1">&#39;plot_latex_table.json&#39;</span><span class="p">,</span> <span class="s1">&#39;accuracy_table.tex&#39;</span><span class="p">)</span>
+    <span class="n">write_to_files</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Malware Detection Using HPC Data Analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Boyou Zhou.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,158 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plot_cv_stat_10_fold &#8212; Malware Detection Using HPC Data Analysis  documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Malware Detection Using HPC Data Analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for plot_cv_stat_10_fold</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">auc</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_pdf</span> <span class="k">import</span> <span class="n">PdfPages</span>
+
+<span class="kn">import</span> <span class="nn">plot_cv_stat</span>
+
+<div class="viewcode-block" id="read_data_customized_cv"><a class="viewcode-back" href="../plot_cv_stat_10_fold.html#plot_cv_stat_10_fold.read_data_customized_cv">[docs]</a><span class="k">def</span> <span class="nf">read_data_customized_cv</span><span class="p">(</span><span class="n">folder_path</span><span class="p">):</span>
+    <span class="c1">#customized_cross_validation/1/classification_report.txt</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">total_data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">folder_path</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="s1">&#39;classification_report.txt&#39;</span><span class="p">:</span>
+                <span class="n">file_full_path</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+                <span class="nb">print</span> <span class="s2">&quot;Reading &quot;</span> <span class="o">+</span> <span class="n">file_full_path</span> <span class="o">+</span> <span class="s2">&quot; ...&quot;</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_full_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_file</span><span class="p">:</span>
+                    <span class="n">data_per_file</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+                <span class="n">input_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+                <span class="k">for</span> <span class="n">models</span> <span class="ow">in</span> <span class="n">data_per_file</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">models</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">models</span><span class="p">]</span>    <span class="o">=</span> <span class="p">{}</span>
+                    
+                    <span class="n">experiment_times</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">file_full_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> \
+                                        <span class="nb">int</span><span class="p">(</span><span class="n">file_full_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">models</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">total_data</span><span class="p">:</span>
+                        <span class="n">total_data</span><span class="p">[</span><span class="n">models</span><span class="p">]</span>    <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">if</span> <span class="n">experiment_times</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">total_data</span><span class="p">[</span><span class="n">models</span><span class="p">]:</span>
+                        <span class="n">total_data</span><span class="p">[</span><span class="n">models</span><span class="p">][</span><span class="n">experiment_times</span><span class="p">]</span>  <span class="o">=</span> <span class="p">{}</span>
+
+                    <span class="k">for</span> <span class="n">specs</span> <span class="ow">in</span> <span class="n">data_per_file</span><span class="p">[</span><span class="n">models</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">specs</span> <span class="o">!=</span> <span class="s1">&#39;support&#39;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">specs</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="n">models</span><span class="p">]:</span>
+                                <span class="n">data</span><span class="p">[</span><span class="n">models</span><span class="p">][</span><span class="n">specs</span><span class="p">]</span>    <span class="o">=</span> <span class="p">[]</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">data</span><span class="p">[</span><span class="n">models</span><span class="p">][</span><span class="n">specs</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_per_file</span><span class="p">[</span><span class="n">models</span><span class="p">][</span><span class="n">specs</span><span class="p">])</span>
+
+                            <span class="k">if</span> <span class="n">specs</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">total_data</span><span class="p">[</span><span class="n">models</span><span class="p">][</span><span class="n">experiment_times</span><span class="p">]:</span>
+                                <span class="n">total_data</span><span class="p">[</span><span class="n">models</span><span class="p">][</span><span class="n">experiment_times</span><span class="p">][</span><span class="n">specs</span><span class="p">]</span> <span class="o">=</span> \
+                                    <span class="n">data_per_file</span><span class="p">[</span><span class="n">models</span><span class="p">][</span><span class="n">specs</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">folder_path</span> <span class="o">+</span> <span class="s1">&#39;/total_data.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">total_data</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">output_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">folder_path</span> <span class="o">+</span> <span class="s1">&#39;/summary.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+    <span class="n">output_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+	
+    <span class="n">font</span> <span class="o">=</span> <span class="p">{</span>\
+            <span class="s1">&#39;family&#39;</span> <span class="p">:</span> <span class="s1">&#39;serif&#39;</span><span class="p">,</span>\
+            <span class="s1">&#39;size&#39;</span>   <span class="p">:</span> <span class="mi">20</span><span class="p">}</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">font</span><span class="p">)</span>
+
+    <span class="c1"># read_data_classic_cv()</span>
+    <span class="c1"># plot_cv_stat.plot_cv(&#39;classic_cross_validation/summary.txt&#39;,\</span>
+    <span class="c1">#         &#39;figures/classic_cv_boxplot.pdf&#39;)</span>
+    <span class="c1"># read_data_customized_cv(&#39;learn_traces&#39;)</span>
+    <span class="c1"># plot_cv_stat.plot_cv(&#39;learn_traces/summary.txt&#39;,\</span>
+    <span class="c1">#         &#39;figures/classic_cv_boxplot.pdf&#39;)</span>
+    <span class="c1"># read_data_customized_cv(&#39;customized_cross_validation&#39;)</span>
+    <span class="c1"># plot_cv_stat.plot_cv(&#39;customized_cross_validation/summary.txt&#39;,\</span>
+    <span class="c1">#         &#39;figures/customized_cv_boxplot.pdf&#39;)</span>
+    <span class="c1"># plot_cv_stat.stat_cv_all(&#39;learn_traces&#39;, &#39;customized_cross_validation&#39;)</span>
+
+
+    <span class="c1"># read_data_customized_cv(&#39;1k_custom_cv&#39;)</span>
+    <span class="c1"># read_data_customized_cv(&#39;1k_classic_cv&#39;)</span>
+    <span class="c1"># plot_cv_stat.plot_cv(&#39;1k_classic_cv/summary.txt&#39;,\</span>
+    <span class="c1">#         &#39;figures/classic_cv_boxplot.pdf&#39;)</span>
+    <span class="c1"># plot_cv_stat.plot_cv(&#39;1k_custom_cv/summary.txt&#39;,\</span>
+    <span class="c1">#         &#39;figures/classic_cv_boxplot.pdf&#39;)</span>
+    <span class="n">plot_cv_stat</span><span class="o">.</span><span class="n">stat_cv_all</span><span class="p">(</span><span class="s1">&#39;1k_classic_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;1k_custom_cv&#39;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Malware Detection Using HPC Data Analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Boyou Zhou.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.
+    </div>
+  </body>
+</html>
