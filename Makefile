@@ -20,6 +20,6 @@ help:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 publish:
-	cp -r build/html docs
+	cp -r build/html/* docs
 	git add . && git commit -m "published" && git ps origin master
 

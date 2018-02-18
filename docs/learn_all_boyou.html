@@ -52,7 +52,29 @@
 <dl class="method">
 <dt id="learn_all_boyou.boyou_learn.load_data">
 <code class="descname">load_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/learn_all_boyou.html#boyou_learn.load_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#learn_all_boyou.boyou_learn.load_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The load_data function loads data according to a list of files specified in the 
+list. Benignware data are vertically stacked, and it is non-discriminative towards
+different binaries. It initiates the report of current experiment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>self.report</strong> (<em>dict</em>) – The report is the dictionary of all the results.</li>
+<li><strong>self.benign_dict</strong> (<em>dict</em>) – The benignware names are recorded. The value of each entry                is boolean. The purpose of this is to keep track of benignware.</li>
+<li><strong>self.malware_dict</strong> (<em>dict</em>) – Similar to benignware, this works for malware.</li>
+<li><strong>self.benign_data</strong> (<em>array</em>) – Every feature vector in the numpy array is vertically stacked.</li>
+<li><strong>self.malware_data</strong> (<em>array</em>) – Similar to self.benign_data</li>
+<li><strong>self.benign_label</strong> (<em>list</em>) – Labels for benignware [1, 1, 1, … 1]</li>
+<li><strong>self.malware_label</strong> (<em>list</em>) – Similar to benign_label [0, 0, 0, … 0]</li>
+<li><strong>self.data</strong> (<em>array</em>) – Stacking benign data over malware data</li>
+<li><strong>self.label</strong> (<em>array</em>) – Stacking benign label over malware label</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="learn_all_boyou.boyou_learn.roc_curve_report">
