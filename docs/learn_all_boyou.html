@@ -158,12 +158,15 @@
 <dd><dl class="method">
 <dt id="learn_all_boyou.boyou_learn.classic_cross_validation">
 <code class="descname">classic_cross_validation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/learn_all_boyou.html#boyou_learn.classic_cross_validation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#learn_all_boyou.boyou_learn.classic_cross_validation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>classic_cross_validation runs cross validation with ALL the data in the feature
+vectors. It does NOT separate feature vectors between training and testing dataset.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="learn_all_boyou.boyou_learn.cv_text_class_report">
 <code class="descname">cv_text_class_report</code><span class="sig-paren">(</span><em>names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/learn_all_boyou.html#boyou_learn.cv_text_class_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#learn_all_boyou.boyou_learn.cv_text_class_report" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>cv_text_class_report generates logs for cross validation results.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="learn_all_boyou.boyou_learn.load_data">
@@ -195,32 +198,43 @@ different binaries. It initiates the report of current experiment.</p>
 <dl class="method">
 <dt id="learn_all_boyou.boyou_learn.roc_curve_report">
 <code class="descname">roc_curve_report</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/learn_all_boyou.html#boyou_learn.roc_curve_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#learn_all_boyou.boyou_learn.roc_curve_report" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Use fpr and tpr information to record the roc information.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="learn_all_boyou.boyou_learn.run">
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/learn_all_boyou.html#boyou_learn.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#learn_all_boyou.boyou_learn.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>run function has the minimum experimental setup. It uses the basic training and 
+testing split.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="learn_all_boyou.boyou_learn.setup_classifiers">
 <code class="descname">setup_classifiers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/learn_all_boyou.html#boyou_learn.setup_classifiers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#learn_all_boyou.boyou_learn.setup_classifiers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>setup_classifiers only generate the classifier class objects. nothing more.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="learn_all_boyou.boyou_learn.setup_train_test_split">
 <code class="descname">setup_train_test_split</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/learn_all_boyou.html#boyou_learn.setup_train_test_split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#learn_all_boyou.boyou_learn.setup_train_test_split" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Setup_train_test_split uses default split (scikit-learn split) to separate the 
+training and testing dataset.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="learn_all_boyou.boyou_learn.test_rasoul">
 <code class="descname">test_rasoul</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/learn_all_boyou.html#boyou_learn.test_rasoul"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#learn_all_boyou.boyou_learn.test_rasoul" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Test rasoul function train and test ransomware results. This evalutae the capability 
+of detecting ransomware using benignware and malware results.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="learn_all_boyou.boyou_learn.text_class_report">
 <code class="descname">text_class_report</code><span class="sig-paren">(</span><em>names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/learn_all_boyou.html#boyou_learn.text_class_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#learn_all_boyou.boyou_learn.text_class_report" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Text_class_report for experiment log files. text report updates the self.report 
+to log the results in the terminal. The results include precision, recall, f1_score
+and support. The results are dumped into classification report. The labels are 0 and 1.</p>
+</dd></dl>
 
 </dd></dl>
 

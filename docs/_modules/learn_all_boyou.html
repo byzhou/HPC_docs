@@ -184,7 +184,9 @@
 <div class="viewcode-block" id="boyou_learn"><a class="viewcode-back" href="../learn_all_boyou.html#learn_all_boyou.boyou_learn">[docs]</a><span class="k">class</span> <span class="nc">boyou_learn</span><span class="p">:</span>
 
     <span class="k">def</span> <span class="nf">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">data_path_prefix</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">):</span>
-
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        init function for initiating the members</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">benign_data</span>    <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">malware_data</span>   <span class="o">=</span> <span class="p">[]</span>
@@ -289,11 +291,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         
 <div class="viewcode-block" id="boyou_learn.setup_train_test_split"><a class="viewcode-back" href="../learn_all_boyou.html#learn_all_boyou.boyou_learn.setup_train_test_split">[docs]</a>    <span class="k">def</span> <span class="nf">setup_train_test_split</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setup_train_test_split uses default split (scikit-learn split) to separate the </span>
+<span class="sd">        training and testing dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>\
                             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> \</div>
                             <span class="n">random_state</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span> <span class="o">-</span><span class="mi">1</span> <span class="p">))</span>
 
 <div class="viewcode-block" id="boyou_learn.setup_classifiers"><a class="viewcode-back" href="../learn_all_boyou.html#learn_all_boyou.boyou_learn.setup_classifiers">[docs]</a>    <span class="k">def</span> <span class="nf">setup_classifiers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        setup_classifiers only generate the classifier class objects. nothing more.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">names</span>       <span class="o">=</span> <span class="p">[</span>\
                             <span class="s2">&quot;Nearest Neighbors&quot;</span><span class="p">,</span> <span class="s2">&quot;Decision Tree&quot;</span><span class="p">,</span> \
                             <span class="s2">&quot;Random Forest&quot;</span><span class="p">,</span> \
@@ -346,6 +355,11 @@
         <span class="c1">#                 ]</span>
 
 <div class="viewcode-block" id="boyou_learn.text_class_report"><a class="viewcode-back" href="../learn_all_boyou.html#learn_all_boyou.boyou_learn.text_class_report">[docs]</a>    <span class="k">def</span> <span class="nf">text_class_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Text_class_report for experiment log files. text report updates the self.report </span>
+<span class="sd">        to log the results in the terminal. The results include precision, recall, f1_score</span>
+<span class="sd">        and support. The results are dumped into classification report. The labels are 0 and 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#results</span>
         <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">support</span> <span class="o">=</span> \
             <span class="n">precision_recall_fscore_support</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prediction</span><span class="p">,</span> \
@@ -364,6 +378,9 @@
 
 
 <div class="viewcode-block" id="boyou_learn.roc_curve_report"><a class="viewcode-back" href="../learn_all_boyou.html#learn_all_boyou.boyou_learn.roc_curve_report">[docs]</a>    <span class="k">def</span> <span class="nf">roc_curve_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use fpr and tpr information to record the roc information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">,</span> <span class="n">_</span>         <span class="o">=</span> <span class="n">roc_curve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos_label</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">roc_auc</span>             <span class="o">=</span> <span class="n">auc</span><span class="p">(</span><span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;fpr&#39;</span><span class="p">]</span>            <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fpr</span><span class="p">)</span>
@@ -376,6 +393,10 @@
         <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="boyou_learn.run"><a class="viewcode-back" href="../learn_all_boyou.html#learn_all_boyou.boyou_learn.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        run function has the minimum experimental setup. It uses the basic training and </span>
+<span class="sd">        testing split.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start to run ...&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_train_test_split</span><span class="p">()</span>
@@ -398,6 +419,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">names</span> <span class="o">+</span> <span class="s2">&quot; testing completed!&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="boyou_learn.test_rasoul"><a class="viewcode-back" href="../learn_all_boyou.html#learn_all_boyou.boyou_learn.test_rasoul">[docs]</a>    <span class="k">def</span> <span class="nf">test_rasoul</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test rasoul function train and test ransomware results. This evalutae the capability </span>
+<span class="sd">        of detecting ransomware using benignware and malware results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start to run ...&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_train_test_split</span><span class="p">()</span>
@@ -442,6 +467,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">names</span> <span class="o">+</span> <span class="s2">&quot; testing completed!&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="boyou_learn.cv_text_class_report"><a class="viewcode-back" href="../learn_all_boyou.html#learn_all_boyou.boyou_learn.cv_text_class_report">[docs]</a>    <span class="k">def</span> <span class="nf">cv_text_class_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        cv_text_class_report generates logs for cross validation results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">chunk_length</span>            <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">[</span><span class="n">names</span><span class="p">]</span>      <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
@@ -464,6 +492,10 @@
         <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             
 <div class="viewcode-block" id="boyou_learn.classic_cross_validation"><a class="viewcode-back" href="../learn_all_boyou.html#learn_all_boyou.boyou_learn.classic_cross_validation">[docs]</a>    <span class="k">def</span> <span class="nf">classic_cross_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        classic_cross_validation runs cross validation with ALL the data in the feature</span>
+<span class="sd">        vectors. It does NOT separate feature vectors between training and testing dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start to cross validate ...&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_classifiers</span><span class="p">()</span>
@@ -482,6 +514,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">names</span> <span class="o">+</span> <span class="s2">&quot; testing completed!&quot;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the main function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">logger</span>  <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
